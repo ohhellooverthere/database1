@@ -1,0 +1,227 @@
+//
+//  main.cpp
+//  data base 1
+//
+//  Created by Андрей Иоффе on 1/23/19.
+//  Copyright © 2019 Андрей Иоффе. All rights reserved.
+//
+
+#include <iostream>
+#include <string>
+#include <fstream>
+#include<cstdlib>
+int NumberOfUsers=0;
+using namespace std;
+struct question
+{
+    string text;
+    int questId;
+}guest[20];
+void Register();
+void Writequestions()
+{
+    fstream quest;
+    quest.open("/Users/andrei/Documents/lab 1 prog/loginfile.txt",ios::out|ios::binary|ios::app);
+    if(quest.is_open())
+    {
+        string text;
+        cout<< "file is opened successfull"<<endl;
+        quest >> text;
+        quest.close();
+    }
+    else{
+        cout<<"file wasn't opened correctly"<<endl;
+    }
+}
+
+
+
+void Register();
+struct username{
+    int personIndex;
+    string login;
+    string password;
+    bool admin;// if 1 - admin; if 0 - user ;
+}people[20];
+struct info{
+    int NumberOfUsers;
+}statistics;
+void ShowPeople();
+void UpdateNumberOfPeople();
+void SearchLogin(string login, string password,bool registernotdone) // искать
+{
+    // переменная в которую записываем то что вводим с клавиатуры log
+   
+    fstream Login;
+    Login.open("/Users/andrei/Documents/lab 1 prog/loginfile.txt",ios::in|ios::binary);// найти сходство
+    if(Login.is_open())
+    {
+        
+        
+        
+        cout<< "file is opened successfull"<<endl;
+        for(int i=0;i<NumberOfUsers;i++){
+            if(login==people[NumberOfUsers].login)
+            {
+                if (password==people[i].password)
+                {
+                    registernotdone=false;
+                    break;
+                }
+                else {
+                    cout<<"wrong login or password";
+                    break;
+                }
+            }
+        }
+
+        //Login << people[NumberOfUsers].login;
+        
+        Login.close();
+    }
+    else{
+        cout<<"file wasn't opened correctly"<<endl;
+    }
+}
+void EnterLogin(bool &registernotdone);
+void LoginOrRegister(bool &registernotdone );
+
+int main(int argc, const char * argv[]) {
+    
+    bool registernotdone=true;
+    UpdateNumberOfPeople();
+    ShowPeople();
+        cout<<" MENU "<<endl;
+    LoginOrRegister(registernotdone);
+
+        // найти такой же логин в файле ; если отсутствует - cout<<"no login found, please register "
+    
+    
+   
+    return 0;
+}
+void LoginOrRegister(bool &registernotdone ){
+    char option;
+    cout<<"login : press 1"<<endl;
+    cout<<"register : press 2"<<endl;
+    cin>>option;
+    if (option=='1')
+    {
+        EnterLogin(registernotdone);
+        if(registernotdone)
+        {
+            cout<<"Create your account firstly"<<endl;
+            LoginOrRegister(registernotdone);
+        }
+        
+    }
+    else if(option=='2')
+    {
+        Register();
+        LoginOrRegister(registernotdone);
+    }
+    
+}
+void EnterLogin(bool &registernotdone)
+{
+    string login,password;
+    cout<<"Enter login : "<<endl;
+    cin>>login;
+    cout<<"Enter password : "<<endl;
+    cin>>password;
+    SearchLogin( login,  password, registernotdone) ;
+}
+void Register()
+{
+        fstream Login;
+    Login.open("/Users/andrei/Documents/lab 1 prog/loginfile.txt",ios::out|ios::binary|ios::app);
+    if(Login.is_open())
+    {
+        string login;
+        string password;
+        bool admin;
+
+        cout<< "file is opened successfull"<<endl;
+         cout<<"Enter your login"<<endl;
+        cin>>login;
+        people[NumberOfUsers].login=login;
+        Login << people[NumberOfUsers].login;
+        cout<<"Enter your password"<<endl;
+        cin>>password;
+        people[NumberOfUsers].password=password;
+        Login << people[NumberOfUsers].password;
+        cout<<"Enter your role"<<endl;
+        cin>>admin;
+        people[NumberOfUsers].admin=admin;
+        Login << people[NumberOfUsers].admin;
+        
+        NumberOfUsers++;
+        cout<<"number of people : "<<NumberOfUsers<<endl;
+        Login.close();
+        }
+        else
+        {
+            cout<<"file wasn't opened correctly"<<endl;
+        }
+}
+void ShowPeople()
+{
+    if(NumberOfUsers>0)
+    {
+        cout<<"There are "<<NumberOfUsers<<"users in database"<<endl;
+    }
+    else
+    {
+        cout<<"there is nobody in database"<<endl;
+    }
+}
+void UpdateNumberOfPeople()
+{
+    fstream info ;
+    info.open("ADRESS ",ios::out|ios::binary);
+    if(info.is_open())
+    {
+        int number;
+        
+        cout<< "file is opened successfull"<<endl;
+        number = NumberOfUsers;
+        info >> number;//check
+        info.close();
+    }
+    else
+    {
+        cout<<"file wasn't opened correctly"<<endl;
+    }
+
+}
+void CheckForNumberOfPeople(){
+    fstream info ;
+    int number;
+    info.open("ADRESS ",ios::in|ios::binary);// ввести ноль в файл
+    if(info.is_open())
+    {
+        cout<< "file is opened successfull"<<endl;
+        
+        
+        long file_size;
+        info.seekg(0, ios::end);
+        file_size = info.tellg();
+        if (file_size == 0)
+        {
+            NumberOfUsers=0;
+        }
+        else{
+            info>>number;// считать строку
+            NumberOfUsers=number;
+        }
+        
+        
+        
+        info.close();
+    }
+    else
+    {
+        cout<<"file wasn't opened correctly"<<endl;
+    }
+
+}
