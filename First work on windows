@@ -1,0 +1,75 @@
+
+#include "pch.h"
+#include <iostream>
+#include <fstream>
+#include <conio.h>
+#include <stdlib.h>
+
+using namespace std;
+struct username {
+		int personIndex;
+		char login[20];
+		char password[20];
+		bool Admin;//1- admin; 0- user
+}people[20];
+struct info {
+	int numberOfUsers;
+	int NumberOfQuestions;
+}statistics;
+void registration();
+
+int main()
+{
+	char input;
+	cout << "/t Menu" << endl;
+		cout << "login : press 1" << endl;
+		cout << "register : press 2" << endl;
+		input = _getch();
+		if (input == '1')
+		{
+			cout << "logining" << endl;
+		}
+		else if(input=='2')
+		{
+			system("cls");
+			registration();
+		}
+		system("pause");
+}
+void registration()
+{
+	fstream registr;
+	registr.open("loginFile", ios::binary|ios::app);
+	if (registr.is_open())
+	{
+		cout << "register file is opened correctly" << endl;
+		cout << "enter your login : "<<endl;
+		gets_s(people[statistics.numberOfUsers].login);
+
+		cout << "enter your password : " << endl;
+		gets_s(people[statistics.numberOfUsers].password);
+		
+		cout << "Choose your role :" << endl;
+		cout << "Admin: press 1" << endl;
+			cout << "User: press 2" << endl;
+			char input;
+			input = _getch();
+			if (input == '1')
+			{
+				people[statistics.numberOfUsers].Admin = 1;
+				cout << "1"<<endl;
+			}
+			else if (input == '2')
+			{
+				people[statistics.numberOfUsers].Admin = 0;
+				cout << "2"<<endl;
+			}
+			statistics.numberOfUsers++;// именно после заполнения , иначе не будет совпадать с индексами 
+			//UPDATE_INFO();
+			cout << "Number of people in database : "<<statistics.numberOfUsers<<endl;
+			registr.close();
+	}
+	else {
+		cout << "registration file wastn't open correctly" << endl;
+	}
+}
