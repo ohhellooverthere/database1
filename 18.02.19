@@ -1,0 +1,304 @@
+#include "pch.h"
+#include <iostream>
+#include <fstream>
+#include <conio.h>
+#include <stdlib.h>
+#include <cstring>
+#include <string>
+
+using namespace std;
+string role;
+struct username {
+	char login[20];
+	char password[20];
+	bool Admin;//1- admin; 0- user
+}people[20], workingPerson;
+struct info {
+	int numberOfUsers;
+	int NumberOfQuestions;
+}statistics;
+struct question {
+	// create struct question ( question index , char question[50]);numberofQuestion[20] 
+	int Qustionindex;
+	char QuestionText[50];
+}QuestionNumber[20];
+struct answers {
+	//struct answers(char answer[50]; int NumbrOfVotes;)numberOfAnswers[20]
+	char AnswerText[50];
+	int NumberOfVotes;
+}NumberOfAnswers[20];
+
+
+void registration();
+void Menu();
+void Readlogin();
+void UpdateStats();
+void CheckStats();
+void EnterPas(int i);
+void CheckLogin();
+void AddQuestions();
+
+
+int main()
+{
+	CheckStats();
+	Menu();
+	if (workingPerson.Admin)
+	{
+		system("cls");
+		char input;
+		input = _getch();
+		cout << "To add Questions press 1 : " << endl;
+		cout << "To add Answers press 2 : " << endl;
+
+		if (input == '1')
+		{
+
+		}
+		else if (input == '2')
+		{
+
+		}
+		else if (input == 27)
+		{
+			exit(1);
+		}
+		// create struct question ( question index , char question[50]);numberofQuestion[20] 
+		//struct answers(char answer[50]; int NumbrOfVotes;)numberOfAnswers[20]
+		//add questions(open write question file);(question ++) (update stats) 
+		//Add answers to questions (open write answer file )
+
+	}
+}
+void registration()
+{
+
+	fstream registr;
+	registr.open("loginFile.txt", fstream::out | fstream::ate | fstream::binary | fstream::in);
+	if (registr.is_open())
+	{
+		//registr.write(people[statistics.numberOfUsers].login, sizeof(people[statistics.numberOfUsers].login));
+
+
+
+		cout << "register file is opened correctly" << endl;
+		cout << "enter your login : " << endl;
+		char log[20];
+		gets_s(log, 20);
+		strcpy_s(people[statistics.numberOfUsers].login, log);
+
+		//registr.write(people[statistics.numberOfUsers].login, sizeof(people[statistics.numberOfUsers].login));
+
+		cout << "enter your password : " << endl;
+		char pas[20];
+		gets_s(pas, 20);
+		strcpy_s(people[statistics.numberOfUsers].password, pas);
+
+
+		//registr.write(people[statistics.numberOfUsers].password, sizeof(people[statistics.numberOfUsers].password));
+
+
+		cout << "Choose your role :" << endl;
+		cout << "Admin: press 1" << endl;
+		cout << "User: press 2" << endl;
+		char input;
+		input = _getch();
+		if (input == '1')
+		{
+			people[statistics.numberOfUsers].Admin = 1;
+			//	registr.write((char*)people[statistics.numberOfUsers].Admin, sizeof(people[statistics.numberOfUsers].Admin));
+			cout << "admin" << endl;
+		}
+		else if (input == '2')
+		{
+			people[statistics.numberOfUsers].Admin = 0;
+			cout << "user" << endl;
+		}
+
+		registr.write((char *)&people[statistics.numberOfUsers], sizeof(people[statistics.numberOfUsers]));
+		statistics.numberOfUsers++;// именно после заполнения , иначе не будет совпадать с индексами 
+		UpdateStats();
+		cout << "You are now registred" << endl;
+		cout << "Number of people in database : " << statistics.numberOfUsers << endl;
+		registr.close();
+
+		system("pause");
+
+		system("cls");
+		char a;
+		cout << "login : press 1 " << endl;
+		cout << "Exit: press esc" << endl;
+		a = _getch();
+		if (a == '1')
+		{
+			Readlogin();
+			// login ();
+		}
+		else if (a == 27)
+		{
+			exit(1);
+		}
+		system("pause");
+	}
+	else {
+		cout << "registration file wastn't open correctly" << endl;
+	}
+}
+void Menu()
+{
+	char input;
+
+	cout << "MENU" << endl;
+	cout << "login : press 1" << endl;
+	cout << "register : press 2" << endl;
+	cout << "Exit : press esc" << endl;
+	input = _getch();
+	if (input == '1')
+	{
+		Readlogin();
+		//cout << "logining" << endl;
+		// функия логининга
+	}
+	else if (input == '2')
+	{
+		system("cls");
+		registration();
+	}
+	else if (input == 27)
+	{
+		exit(1);
+	}
+	system("pause");
+}
+void Readlogin()
+{
+	fstream login;
+	login.open("loginFile.txt", ios::in | ios::binary);//чтение, бинарный
+	if (login.is_open())
+	{
+
+		//login.seekg(0, ios::beg);
+		int i = 0;
+		while (i < statistics.numberOfUsers)
+		{
+			login.read((char *)&people[i], sizeof(people[i]));
+			i++;
+		}
+		login.close();
+
+		cout << "the entire file content is in memory" << endl;
+	}
+	else
+		cout << "Unable to open file" << endl;
+
+	CheckLogin();// логинимся
+
+}
+void UpdateStats() {
+	fstream Stats;
+	Stats.open("Stats.txt", ios::out | ios::binary);
+	if (Stats.is_open())
+	{
+		Stats.write((char*)&statistics, sizeof(statistics));
+	}
+	else
+	{
+		cout << "can't open stats file" << endl;
+	}
+
+}
+void CheckStats()
+{
+	fstream Stats;
+	Stats.open("Stats.txt", ios::in | ios::binary);
+	if (Stats.is_open())
+	{
+		Stats.seekg(0, ios::beg);
+
+		Stats.read((char*)&statistics, sizeof(statistics));
+		cout << "there is " << statistics.numberOfUsers << "Users" << endl;
+		cout << "there is " << statistics.NumberOfQuestions << "Questions" << endl;
+
+	}
+	else
+	{
+		cout << "can't open stats file" << endl;
+	}
+
+}
+void EnterPas(int i)
+{
+	cout << "enter password : " << endl;
+	char pas[20];
+	gets_s(pas, 20);
+
+	if (strcmp(pas, people[i].password))
+	{
+
+		if (people[i].Admin)
+		{
+			role = "Admin";
+		}
+		else
+		{
+			role = "User";
+		}
+		cout << "You are logged in as " << role << endl;
+
+	}
+	// проверить пароль 
+	else
+	{
+		cout << "Wrong password,try again" << endl;
+		EnterPas(i);
+
+	}
+}
+void CheckLogin()
+{
+	bool IsDetected = false;
+	cout << "enter login :" << endl;
+	char log[20];
+	gets_s(log, 20);
+	for (int i = 0; i < 20; i++)// отличаются
+	{
+		if (strcmp(log, people[i].login))
+		{
+			EnterPas(i);
+			IsDetected = true;
+			workingPerson = people[i];
+			break;
+		}
+	}
+	if (!IsDetected)
+	{
+		cout << "No loggin found, please register " << endl;
+		system("pause");
+
+		system("cls");
+		Menu();
+	}
+
+}
+void AddQuestions() {
+	//add questions(open write question file);(question ++) (update stats) 
+	fstream QuestionFile;
+	QuestionFile.open("QuestionFile", fstream::in | fstream::binary | fstream::out | fstream::ate);//pointer ate writing reading because out also truncate the file
+	if (QuestionFile.is_open())
+	{
+		QuestionNumber[statistics.NumberOfQuestions].Qustionindex = statistics.NumberOfQuestions + 1 ;
+		char qestionText[50];
+		gets_s(qestionText, 20);
+		strcpy_s(QuestionNumber[statistics.NumberOfQuestions].QuestionText, qestionText);
+		// write to file
+
+		statistics.NumberOfQuestions++;
+		UpdateStats();
+
+		QuestionFile.close();
+	}
+	else
+	{
+		cout << "Question File loading failed " << endl;
+	}
+}
